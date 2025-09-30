@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
@@ -48,6 +48,7 @@ export const ShopModal = ({
             <Package className="w-6 h-6" />
             Grow Shop
           </DialogTitle>
+          <DialogDescription>Shop für Samen, Erde und Upgrades</DialogDescription>
         </DialogHeader>
 
         <div className="flex items-center gap-2 mb-4">
