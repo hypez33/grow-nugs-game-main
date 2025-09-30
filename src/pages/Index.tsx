@@ -44,7 +44,8 @@ const Index = () => {
     claimQuestReward,
     triggerRandomEvent,
     tickEvent,
-    recordWaterAction
+    recordWaterAction,
+    recordPerfectWater
   } = useGameState();
 
   const logic = usePlantLogic(state.upgrades, state.event?.effects?.growthMultiplier ?? 1);
@@ -107,7 +108,7 @@ const Index = () => {
     }
   };
 
-  const handleWater = (slotIndex: number) => {
+  const handleWater = (slotIndex: number, skillBonus: number = 0) => {
     const plant = state.slots[slotIndex];
     if (!plant) return;
 
@@ -116,14 +117,18 @@ const Index = () => {
       toast.error('Gießen nicht möglich', { description: action.reason });
       return;
     }
+    const baseWindow = 2500;
+    const windowMs = state.event?.id === 'festival' ? 4000 : state.event?.id === 'cosmic-alignment' ? 3500 : state.event?.id === 'mystic-fog' ? 1500 : baseWindow;
 
     const total = action.cooldownTotalMs ?? 15000;
     const readySince = Date.now() - (plant.modifiers.lastWaterTime + total);
-    const isPerfect = readySince >= 0 && readySince <= 2500;
+    const isPerfect = readySince >= 0 && readySince <= windowMs;
     if (spendNugs(action.cost)) {
-      const newModifiers = logic.applyWater(plant, isPerfect);
+      const chainBonus = Math.min(0.03, Math.floor((state.stats?.waterChain || 0) / 3) * 0.01);
+      const newModifiers = logic.applyWater(plant, isPerfect, skillBonus + chainBonus);
       updatePlant(slotIndex, { modifiers: newModifiers });
       recordWaterAction(1);
+      recordPerfectWater(isPerfect);
       toast.success(isPerfect ? 'Perfektes Gießen!' : 'Pflanze gegossen', {
         description: `Qualität: ${(newModifiers.qualityMultiplier * 100).toFixed(0)}%`
       });
@@ -321,6 +326,7 @@ const Index = () => {
                   onFertilize={handleFertilize}
                   onHarvest={handleHarvest}
                   onUpdate={handleUpdate}
+                  perfectWindowMs={state.event?.id === 'festival' ? 4000 : state.event?.id === 'cosmic-alignment' ? 3500 : state.event?.id === 'mystic-fog' ? 1500 : 2500}
                 />
               ))}
             </div>
