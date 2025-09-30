@@ -67,6 +67,9 @@ export interface GameState {
     totalBudsHarvested: number;
     totalBudsSold: number;
     totalTrades: number;
+    waterChain: number;
+    bestWaterChain: number;
+    lastWaterDay: string | null;
   };
   settings: {
     sfxEnabled: boolean;
@@ -122,6 +125,9 @@ const INITIAL_STATE: GameState = {
     totalBudsHarvested: 0,
     totalBudsSold: 0,
     totalTrades: 0,
+    waterChain: 0,
+    bestWaterChain: 0,
+    lastWaterDay: null,
   },
   settings: {
     sfxEnabled: true,
@@ -376,6 +382,24 @@ export const useGameState = () => {
           : q
       ),
     }));
+  }, []);
+
+  const recordPerfectWater = useCallback((perfect: boolean) => {
+    setState(prev => {
+      const today = new Date();
+      const dayKey = `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`;
+      const sameDay = prev.stats.lastWaterDay === dayKey || prev.stats.lastWaterDay === null;
+      const chain = perfect ? ((sameDay ? prev.stats.waterChain : 0) + 1) : 0;
+      return {
+        ...prev,
+        stats: {
+          ...prev.stats,
+          lastWaterDay: dayKey,
+          waterChain: chain,
+          bestWaterChain: Math.max(prev.stats.bestWaterChain, chain)
+        }
+      };
+    });
   }, []);
 
   const triggerRandomEvent = useCallback(() => {
