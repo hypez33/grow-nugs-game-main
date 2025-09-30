@@ -94,7 +94,7 @@ export const usePlantLogic = (upgrades: Record<string, number>, growthMultiplier
     return { canPerform: true, cost: FERTILIZER_COST };
   }, []);
 
-  const applyWater = useCallback((plant: Plant, isPerfect?: boolean): PlantModifiers => {
+  const applyWater = useCallback((plant: Plant, isPerfect?: boolean, skillBonus: number = 0): PlantModifiers => {
     const phase = PHASES[plant.phaseIndex];
     const waterBonusLevels =
       (upgrades['precision-water'] || 0) * 0.05 +
@@ -105,10 +105,10 @@ export const usePlantLogic = (upgrades: Record<string, number>, growthMultiplier
 
     if (phase.waterRecommended) {
       // Positive effect in recommended phases
-      qualityChange = 0.1 * waterBonus + (isPerfect ? 0.05 : 0);
+      qualityChange = 0.1 * waterBonus + (isPerfect ? 0.05 : 0) + skillBonus;
     } else {
       // Negative effect (overwatering)
-      qualityChange = -0.05 + (isPerfect ? 0.02 : 0);
+      qualityChange = -0.05 + (isPerfect ? 0.02 : 0) + skillBonus * 0.5;
     }
 
     return {
