@@ -83,3 +83,21 @@ All colors MUST be HSL.
   from { background-position: 0 0; }
   to { background-position: 40px 0; }
 }
+
+/* Water droplets micro particles */
+.droplet {
+  position: absolute;
+  bottom: 0;
+  width: 6px;
+  height: 10px;
+  background: hsl(200 90% 60% / 0.9);
+  border-radius: 50% 50% 40% 40%;
+  box-shadow: 0 0 8px hsl(200 90% 60% / 0.4);
+  animation: droplet-up 0.8s ease-out forwards;
+}
+
+@keyframes droplet-up {
+  0% { transform: translateY(0) scale(0.8); opacity: 0.9; }
+  60% { transform: translateY(-40px) scale(1); opacity: 1; }
+  100% { transform: translateY(-70px) scale(0.9); opacity: 0; }
+}
